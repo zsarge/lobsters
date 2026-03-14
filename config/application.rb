@@ -107,15 +107,15 @@ class << Rails.application
   end
 
   def domain
-    "lobste.rs"
+    "yapper.news"
   end
 
   def name
-    "Lobsters"
+    "Yapper News"
   end
 
   def og_description
-    "A computing-focused community centered around link aggregation and discussion."
+    "Yapper News, bought to you by the linkington cat"
   end
 
   # to force everyone to be considered logged-out (without destroying

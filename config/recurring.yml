@@ -41,6 +41,15 @@ production:
   fetch_iana_tlds:
     class: FetchIanaTldsJob
     schedule: every 1 month
+  expire_page_cache:
+    command: 'system("find #{Rails.public_path.join("cache")} -type f -not -mmin 5 -delete")'
+    schedule: every 1 minute
+  mail_new_activity:
+    command: 'load Rails.root.join("script/mail_new_activity.rb")'
+    schedule: every 5 minutes
+  mastodon_post:
+    command: 'load Rails.root.join("script/mastodon_post.rb")'
+    schedule: every 5 minutes
 
 development:
   clear_finished_jobs:

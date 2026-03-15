@@ -1,0 +1,71 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: bash -c "rm -f /lobsters/tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: trilogy://root:${MARIADB_ROOT_PASSWORD}@db/lobsters
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_LOG_TO_STDOUT: 'true'
+      RAILS_SERVE_STATIC_FILES: 'true'
+      PIDFILE: tmp/pids/server.pid
+      PUMA_WORKERS: 0
+      RAILS_LOG_LEVEL: debug
+      SMTP_HOST: ${SMTP_HOST:-127.0.0.1}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_DOMAIN: ${SMTP_DOMAIN:-yapper.news}
+      SMTP_STARTTLS_AUTO: ${SMTP_STARTTLS_AUTO:-true}
+    volumes:
+      - lobsters_storage:/lobsters/storage
+      - ./config/recurring.yml:/lobsters/config/recurring.yml
+    depends_on:
+      - db
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: bundle exec rails solid_queue:start
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: trilogy://root:${MARIADB_ROOT_PASSWORD}@db/lobsters
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_LOG_TO_STDOUT: 'true'
+      RAILS_LOG_LEVEL: debug
+    volumes:
+      - lobsters_storage:/lobsters/storage
+      - ./config/recurring.yml:/lobsters/config/recurring.yml
+    depends_on:
+      - db
+      - app
+
+  db:
+    image: mariadb:10.6
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: lobsters
+    volumes:
+      - db_data:/var/lib/mysql
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  db_data:
+  lobsters_storage:
+  caddy_data:
+  caddy_config:

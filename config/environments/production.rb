@@ -115,10 +115,13 @@ Rails.application.configure do
   config.middleware.delete(Rack::Runtime)
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts = [
-    "yapper.news"
-    # /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  ]
+  config.hosts << "yapper.news"
+  config.hosts << "www.yapper.news"
+  config.hosts << "157.245.80.184"
+  # config.hosts = [
+  #   "yapper.news"
+  #   # /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 

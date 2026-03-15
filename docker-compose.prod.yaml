@@ -44,7 +44,7 @@ services:
       - app
 
   db:
-    image: mariadb:10.6
+    image: mariadb:11
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: lobsters

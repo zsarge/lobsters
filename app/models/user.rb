@@ -106,6 +106,30 @@ class User < ApplicationRecord
     s.string :homepage
   end
 
+  enum :custom_color, {
+    default: 0,
+    green: 2,
+    red: 3,
+    pink: 5,
+    blue: 1,
+    light_blue: 11,
+    blellow: 6,
+    blurple: 7,
+    cyan: 8,
+    the: 9,
+    gay: 69,
+    yuri: 42,
+    i_eat_toothpaste_for_fun: 67,
+  }, default: :default
+
+  def custom_color_classname
+    "color_#{self.custom_color}"
+  end
+
+  def has_custom_color?
+    custom_color != "default"
+  end
+
   validates :prefers_color_scheme, inclusion: %w[system light dark]
   validates :prefers_contrast, inclusion: %w[system normal high]
 

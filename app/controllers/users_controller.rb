@@ -14,8 +14,10 @@ class UsersController < ApplicationController
     @title = @showing_user.username
     if !@showing_user.is_active?
       @title_class = :inactive_user
+    elsif @showing_user.has_custom_color?
+      @title_class = @showing_user.custom_color_classname
     elsif @showing_user.is_new?
-      @title_class = :new_user
+      @title_class = :new_user 
     end
 
     if @user.try(:is_moderator?)
@@ -46,7 +48,7 @@ class UsersController < ApplicationController
 
     # pulling 10k+ users is significant enough memory pressure this is worthwhile
     attrs = %w[banned_at created_at deleted_at id invited_by_user_id is_admin is_moderator karma
-      username]
+      username custom_color]
 
     if params[:by].to_s == "karma"
       @users = User.select(*attrs).order(karma: :desc, id: :asc).to_a

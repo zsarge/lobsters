@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include Authenticatable
   include ApplicationHelper
 
-  protect_from_forgery
+  protect_from_forgery prepend: true, with: :exception
   prepend_before_action :prepare_exception_notifier # first in case others raise
   before_action :heinous_inline_partials, if: -> { Rails.env.development? }
   before_action :mini_profiler
@@ -53,6 +53,9 @@ class ApplicationController < ActionController::Base
   end
   rescue_from ActiveRecord::ConnectionNotEstablished, Trilogy::SyscallError::ECONNREFUSED do
     render plain: "500 The database is not taking our calls.", status: 500, content_type: "text/plain"
+  end
+  rescue_from ActionController::InvalidAuthenticityToken do
+    render plain: "422 Invalid CSRF token. Reload the form and try again.", status: :unprocessable_content
   end
 
   def agent_is_spider?

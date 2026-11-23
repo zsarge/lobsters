@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     command: bash -c "rm -f /lobsters/tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: unless-stopped
     environment:
       RAILS_ENV: production
       DATABASE_URL: trilogy://root:${MARIADB_ROOT_PASSWORD}@db/lobsters
@@ -30,6 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     command: bundle exec rails solid_queue:start
+    restart: unless-stopped
     environment:
       RAILS_ENV: production
       DATABASE_URL: trilogy://root:${MARIADB_ROOT_PASSWORD}@db/lobsters
@@ -45,6 +47,7 @@ services:
 
   db:
     image: mariadb:11
+    restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: lobsters
